@@ -30,15 +30,15 @@
 
 #define TREE_MESH "basicTree.dae"
 #define SNOWMAN_MESH "UVSnowman.obj"
-#define GROUND_MESH "Ground.dae"
+#define GROUND_MESH "Ground2.dae"
 #define SNOWMAN_ARM_MESH "SnowmanArm.dae"
 /*----------------------------------------------------------------------------
 				   TEXTURES TO LOAD
 ----------------------------------------------------------------------------*/
 
-#define GROUND_TEXTURE "GroundTexture.png"
+#define GROUND_TEXTURE "GroundSnow2.png"
 #define SNOWMAN_TEXTURE "SnowmanTexture.png"
-//#define TREE_TEXTURE "TreeTexture.png"
+#define TREE_TEXTURE "pineTree.png"
 #define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
 /*----------------------------------------------------------------------------
   ----------------------------------------------------------------------------*/
@@ -83,6 +83,10 @@ GLfloat snowman1_rotationy = 0.0;
 vec3 snowman1Pos = vec3(-10.0f, 0.0f, -10.0f);
 vec3 snowman2Pos = vec3(-5.0f, 0.0f, -10.0f);
 vec3 snowman3Pos = vec3(10.0f, 0.0f, 10.0f);
+vec3 tree1Pos = vec3(5.0f, 0.0f, -4.0f);
+vec3 tree2Pos = vec3(7.0f, 0.0f, 8.0f);
+vec3 tree3Pos = vec3(-5.0f, 0.0f, 8.0f);
+
 
 vec3 cameraPosition = vec3(0, 2, -15);
 vec3 cameraDirection = vec3(0.0f, 0.0f, 1.0f); // start direction depends on camerarotationy, not this vector
@@ -328,12 +332,11 @@ void loadTextures(GLuint& tex, const char* file_name) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB,
 		GL_UNSIGNED_BYTE, loaded_image);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // Type of interpolation used
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // Type of interpolation used
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  // repeat across x coordinate if texture too small 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  // repeat across y coordinate if texture too small 
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // Type of interpolation used
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // Type of interpolation used
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 GLfloat xz_length(const vec3& v) {
@@ -361,34 +364,65 @@ void display(){
 	cameraDirection.v[2] = cos(camerarotationy);
 	mat4 view = look_at(cameraPosition, cameraPosition + cameraDirection, cameraUpVector);
 	mat4 persp_proj = perspective(45.0, (float)width/(float)height, 0.1, 100.0);
-	mat4 ground_matrix = identity_mat4 ();
+	
 
+	// GROUND 1 ------------------------
+	mat4 ground_matrix = identity_mat4 ();
+	ground_matrix = scale(ground_matrix, vec3(15.0, 15.0, 15.0));
+	ground_matrix = rotate_x_deg(ground_matrix, -90);
+	ground_matrix = translate(ground_matrix, vec3(0.0, 1.5, 0.0));
 	// update uniforms & draw
 	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
 	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, ground_matrix.m);
 
-	// GROUND 1 ------------------------
 	glBindTexture(GL_TEXTURE_2D, GROUND_TEX_ID);
 	glUniform1i(texture_location, 0);
 
 	glBindVertexArray(GROUND_ID);
 	glDrawArrays (GL_TRIANGLES, 0, ground_count);
 
+	// TREES
+
 	//Declare your uniform variables that will be used in your shader
 	glBindTexture(GL_TEXTURE_2D, TREE_TEX_ID);
 	glUniform1i(texture_location, 0);
 
-	mat4 tree_local = identity_mat4();
-	tree_local = rotate_x_deg(tree_local, -90);
-	tree_local = scale(tree_local, vec3(2, 2, 2));
-	mat4 tree_global = tree_local;
+	mat4 tree1_local = identity_mat4();
+	tree1_local = rotate_x_deg(tree1_local, -90);
+	tree1_local = scale(tree1_local, vec3(2.5, 2.5, 2.5));
+	tree1_local = translate(tree1_local, tree1Pos);
+	mat4 tree1_global = tree1_local;
 	// update uniforms & draw
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree_global.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree1_global.m);
 	glBindVertexArray(TREE_ID);
 	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);
 
+	mat4 tree2_local = identity_mat4();
+	tree2_local = rotate_x_deg(tree2_local, -90);
+	tree2_local = scale(tree2_local, vec3(2.5, 2.5, 2.5));
+	tree2_local = translate(tree2_local, tree2Pos);
+	mat4 tree2_global = tree2_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree2_global.m);
+	glBindVertexArray(TREE_ID);
+	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);
+
+	mat4 tree3_local = identity_mat4();
+	tree3_local = rotate_x_deg(tree3_local, -90);
+	tree3_local = scale(tree3_local, vec3(2.5, 2.5, 2.5));
+	tree3_local = translate(tree3_local, tree3Pos);
+	mat4 tree3_global = tree3_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree3_global.m);
+	glBindVertexArray(TREE_ID);
+	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);
+				
 	// SNOWMEN
+
+	glBindTexture(GL_TEXTURE_2D, SNOWMAN_TEX_ID);
+	glUniform1i(texture_location, 0);
+
 	mat4 snowman1_local = identity_mat4();
 	snowman1_local = rotate_y_deg(snowman1_local, snowman1_rotationy);
 	snowman1_local = translate(snowman1_local,snowman1Pos);
@@ -507,7 +541,8 @@ void init()
 	generateObjectBufferMesh(SNOWMAN_ARM_ID, SNOWMAN_ARM_MESH, snowman_arm_vertex_count);
 
 	loadTextures(GROUND_TEX_ID, GROUND_TEXTURE);
-	loadTextures(TREE_TEX_ID, SNOWMAN_TEXTURE);
+	loadTextures(TREE_TEX_ID, TREE_TEXTURE);
+	loadTextures(SNOWMAN_TEX_ID, SNOWMAN_TEXTURE);
 	loadTextures(SNOWMAN_ARM_TEX_ID, SNOWMAN_ARM_TEXTURE);
 }
 
@@ -549,7 +584,13 @@ void processNormalKeys(unsigned char key, int x, int y)
 	GLfloat snowman1Collision = xz_length(cameraPosition - snowman1Pos);
 	GLfloat snowman2Collision = xz_length(cameraPosition - snowman2Pos);
 	GLfloat snowman3Collision = xz_length(cameraPosition - snowman3Pos);
+	GLfloat tree1Collision = xz_length(cameraPosition - tree1Pos);
+	GLfloat tree2Collision = xz_length(cameraPosition - tree2Pos);
+	GLfloat tree3Collision = xz_length(cameraPosition - tree3Pos);
 	if (snowman1Collision < 2.0 || snowman2Collision < 2.0 || snowman3Collision < 2.0) {
+		cameraPosition = oldCameraPosition;
+	}
+	else if (tree1Collision < 3.0 || tree2Collision < 3.0 || tree3Collision < 3.0) {
 		cameraPosition = oldCameraPosition;
 	}
 

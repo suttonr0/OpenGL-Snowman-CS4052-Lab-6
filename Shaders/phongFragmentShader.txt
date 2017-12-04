@@ -12,8 +12,6 @@ vec3 Ls = vec3 (1.0, 1.0, 1.0); // white specular colour
 vec3 Ld = vec3 (0.5, 0.5, 0.5); // dull white diffuse light colour
 vec3 La = vec3 (0.5, 0.5, 0.5); // grey ambient colour
 
-// vec3 modulusCart = (10, 10, 10);
-
 // surface reflectance
 vec3 Ks = vec3 (1.0, 1.0, 1.0); // fully reflect specular light
 vec3 Kd = vec3 (0.5, 0.5, 0.7); // blueish grey surface reflectance
