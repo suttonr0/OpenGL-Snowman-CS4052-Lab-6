@@ -39,7 +39,7 @@
 #define GROUND_TEXTURE "GroundTexture.png"
 #define SNOWMAN_TEXTURE "SnowmanTexture.png"
 //#define TREE_TEXTURE "TreeTexture.png"
-//#define SNOWMAN_ARM_TEXTURE "ArmTexture.png"
+#define SNOWMAN_ARM_TEXTURE "ArmTexture.png"
 /*----------------------------------------------------------------------------
   ----------------------------------------------------------------------------*/
 
@@ -365,7 +365,6 @@ void display(){
 	glUniform1i(texture_location, 0);
 
 	glBindVertexArray(GROUND_ID);
-	
 	glDrawArrays (GL_TRIANGLES, 0, ground_count);
 
 	//Declare your uniform variables that will be used in your shader
@@ -404,11 +403,16 @@ void display(){
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman3_global.m);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_vertex_count);
 
+
+	//Declare your uniform variables that will be used in your shader
+	glBindTexture(GL_TEXTURE_2D, SNOWMAN_ARM_TEX_ID);
+	glUniform1i(texture_location, 0);
+
 	// ARMS FOR SNOWMAN 1
 	mat4 snowman_arm_1_local = identity_mat4();
 	snowman_arm_1_local = rotate_x_deg(snowman_arm_1_local, 90-armAngle);
 	snowman_arm_1_local = scale(snowman_arm_1_local, vec3(0.2, 0.2, 0.2));
-	snowman_arm_1_local = translate(snowman_arm_1_local, vec3(1.0f, 2.5f, 0.0f));
+	snowman_arm_1_local = translate(snowman_arm_1_local, vec3(0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_1_global = snowman1_global * snowman_arm_1_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_1_global.m);
@@ -418,7 +422,7 @@ void display(){
 	mat4 snowman_arm_2_local = identity_mat4();
 	snowman_arm_2_local = rotate_x_deg(snowman_arm_2_local, armAngle);
 	snowman_arm_2_local = scale(snowman_arm_2_local, vec3(0.2, 0.2, 0.2));
-	snowman_arm_2_local = translate(snowman_arm_2_local, vec3(-1.0f, 2.5f, 0.0f));
+	snowman_arm_2_local = translate(snowman_arm_2_local, vec3(-0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_2_global = snowman1_global * snowman_arm_2_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_2_global.m);
@@ -470,6 +474,7 @@ void init()
 
 	loadTextures(GROUND_TEX_ID, GROUND_TEXTURE);
 	loadTextures(TREE_TEX_ID, SNOWMAN_TEXTURE);
+	loadTextures(SNOWMAN_ARM_TEX_ID, SNOWMAN_ARM_TEXTURE);
 }
 
 // Placeholder code for the keypress
