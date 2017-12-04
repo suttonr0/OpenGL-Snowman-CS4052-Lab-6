@@ -28,7 +28,7 @@
 // this mesh is a dae file format but you should be able to use any other format too, obj is typically what is used
 // put the mesh in your project directory, or provide a filepath for it here
 
-#define TREE_MESH "testTree.dae"
+#define TREE_MESH "basicTree.dae"
 #define SNOWMAN_MESH "UVSnowman.obj"
 #define GROUND_MESH "Ground.dae"
 #define SNOWMAN_ARM_MESH "SnowmanArm.dae"
@@ -39,7 +39,7 @@
 #define GROUND_TEXTURE "GroundTexture.png"
 #define SNOWMAN_TEXTURE "SnowmanTexture.png"
 //#define TREE_TEXTURE "TreeTexture.png"
-#define SNOWMAN_ARM_TEXTURE "ArmTexture.png"
+#define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
 /*----------------------------------------------------------------------------
   ----------------------------------------------------------------------------*/
 
@@ -79,6 +79,10 @@ GLfloat camerarotationy = 0.0f;
 
 bool armSwitch = true;
 GLfloat armAngle = 0.0f;
+GLfloat snowman1_rotationy = 0.0;
+vec3 snowman1Pos = vec3(-10.0f, 0.0f, -10.0f);
+vec3 snowman2Pos = vec3(-5.0f, 0.0f, -10.0f);
+vec3 snowman3Pos = vec3(10.0f, 0.0f, 10.0f);
 
 vec3 cameraPosition = vec3(0, 2, -15);
 vec3 cameraDirection = vec3(0.0f, 0.0f, 1.0f); // start direction depends on camerarotationy, not this vector
@@ -332,6 +336,10 @@ void loadTextures(GLuint& tex, const char* file_name) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+GLfloat xz_length(const vec3& v) {
+	return sqrt(v.v[0] * v.v[0] +  v.v[2] * v.v[2]);
+}
+
 
 void display(){
 
@@ -372,7 +380,8 @@ void display(){
 	glUniform1i(texture_location, 0);
 
 	mat4 tree_local = identity_mat4();
-	
+	tree_local = rotate_x_deg(tree_local, -90);
+	tree_local = scale(tree_local, vec3(2, 2, 2));
 	mat4 tree_global = tree_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree_global.m);
@@ -380,9 +389,9 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);
 
 	// SNOWMEN
-
 	mat4 snowman1_local = identity_mat4();
-	snowman1_local = translate(snowman1_local, vec3(-10.0f, 0.0f, -10.0f));
+	snowman1_local = rotate_y_deg(snowman1_local, snowman1_rotationy);
+	snowman1_local = translate(snowman1_local,snowman1Pos);
 	mat4 snowman1_global = snowman1_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman1_global.m);
@@ -390,14 +399,14 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, snowman_vertex_count);
 
 	mat4 snowman2_local = identity_mat4();
-	snowman2_local = translate(snowman2_local, vec3(-5.0f, 0.0f, -10.0f));
+	snowman2_local = translate(snowman2_local, snowman2Pos);
 	mat4 snowman2_global = snowman2_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman2_global.m);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_vertex_count);
 
 	mat4 snowman3_local = identity_mat4();
-	snowman3_local = translate(snowman3_local, vec3(0.0f, 0.0f, -10.0f));
+	snowman3_local = translate(snowman3_local, snowman3Pos);
 	mat4 snowman3_global = snowman3_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman3_global.m);
@@ -409,23 +418,45 @@ void display(){
 	glUniform1i(texture_location, 0);
 
 	// ARMS FOR SNOWMAN 1
-	mat4 snowman_arm_1_local = identity_mat4();
-	snowman_arm_1_local = rotate_x_deg(snowman_arm_1_local, 90-armAngle);
-	snowman_arm_1_local = scale(snowman_arm_1_local, vec3(0.2, 0.2, 0.2));
-	snowman_arm_1_local = translate(snowman_arm_1_local, vec3(0.8f, 2.5f, 0.0f));
-	mat4 snowman_arm_1_global = snowman1_global * snowman_arm_1_local;
+	mat4 snowman_arm_11_local = identity_mat4();
+	snowman_arm_11_local = rotate_x_deg(snowman_arm_11_local, 90-armAngle);
+	snowman_arm_11_local = scale(snowman_arm_11_local, vec3(0.2, 0.2, 0.2));
+	snowman_arm_11_local = translate(snowman_arm_11_local, vec3(0.8f, 2.5f, 0.0f));
+	mat4 snowman_arm_11_global = snowman1_global * snowman_arm_11_local;
 	// update uniforms & draw
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_1_global.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_11_global.m);
 	glBindVertexArray(SNOWMAN_ARM_ID);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 
-	mat4 snowman_arm_2_local = identity_mat4();
-	snowman_arm_2_local = rotate_x_deg(snowman_arm_2_local, armAngle);
-	snowman_arm_2_local = scale(snowman_arm_2_local, vec3(0.2, 0.2, 0.2));
-	snowman_arm_2_local = translate(snowman_arm_2_local, vec3(-0.8f, 2.5f, 0.0f));
-	mat4 snowman_arm_2_global = snowman1_global * snowman_arm_2_local;
+	mat4 snowman_arm_12_local = identity_mat4();
+	snowman_arm_12_local = rotate_x_deg(snowman_arm_12_local, armAngle);
+	snowman_arm_12_local = scale(snowman_arm_12_local, vec3(0.2, 0.2, 0.2));
+	snowman_arm_12_local = translate(snowman_arm_12_local, vec3(-0.8f, 2.5f, 0.0f));
+	mat4 snowman_arm_12_global = snowman1_global * snowman_arm_12_local;
 	// update uniforms & draw
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_2_global.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_12_global.m);
+	glBindVertexArray(SNOWMAN_ARM_ID);
+	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
+
+
+	// ARMS FOR SNOWMAN 2
+	mat4 snowman_arm_21_local = identity_mat4();
+	snowman_arm_21_local = rotate_x_deg(snowman_arm_21_local, 90 - armAngle);
+	snowman_arm_21_local = scale(snowman_arm_21_local, vec3(0.2, 0.2, 0.2));
+	snowman_arm_21_local = translate(snowman_arm_21_local, vec3(0.8f, 2.5f, 0.0f));
+	mat4 snowman_arm_21_global = snowman2_global * snowman_arm_21_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_21_global.m);
+	glBindVertexArray(SNOWMAN_ARM_ID);
+	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
+
+	mat4 snowman_arm_22_local = identity_mat4();
+	snowman_arm_22_local = rotate_x_deg(snowman_arm_22_local, armAngle);
+	snowman_arm_22_local = scale(snowman_arm_22_local, vec3(0.2, 0.2, 0.2));
+	snowman_arm_22_local = translate(snowman_arm_22_local, vec3(-0.8f, 2.5f, 0.0f));
+	mat4 snowman_arm_22_global = snowman2_global * snowman_arm_22_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_22_global.m);
 	glBindVertexArray(SNOWMAN_ARM_ID);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 	
@@ -444,6 +475,7 @@ void updateScene() {
 		delta = 0.03f;
 	last_time = curr_time;
 
+	// Arm movement
 	if (armSwitch == true) {
 		armAngle = armAngle + 0.1;
 		if (armAngle > 90) {
@@ -456,6 +488,8 @@ void updateScene() {
 			armSwitch = true;
 		}
 	}
+
+	snowman1_rotationy += 0.1;
 
 	// Draw the next frame
 	glutPostRedisplay();
@@ -480,6 +514,8 @@ void init()
 // Placeholder code for the keypress
 void processNormalKeys(unsigned char key, int x, int y)
 {
+	vec3 oldCameraPosition = cameraPosition;  // Store in case of collision
+
 	if (key == 'i') {
 		translate_y = translate_y + 0.1;
 	}
@@ -507,6 +543,16 @@ void processNormalKeys(unsigned char key, int x, int y)
 		// Rotate clockwise aboutengl y-axis (turn right)
 		camerarotationy -= 0.030f;
 	}
+
+	// COLLISION CALCULATIONS
+	// "FOR LOOP" THIS WITH A VECTOR OF OBJECT POSITIONS
+	GLfloat snowman1Collision = xz_length(cameraPosition - snowman1Pos);
+	GLfloat snowman2Collision = xz_length(cameraPosition - snowman2Pos);
+	GLfloat snowman3Collision = xz_length(cameraPosition - snowman3Pos);
+	if (snowman1Collision < 2.0 || snowman2Collision < 2.0 || snowman3Collision < 2.0) {
+		cameraPosition = oldCameraPosition;
+	}
+
 	glutPostRedisplay();
 }
 
