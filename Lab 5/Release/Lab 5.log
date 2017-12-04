@@ -1,0 +1,14 @@
+﻿  main.cpp
+main.cpp(5): fatal error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  maths_funcs.cpp
+maths_funcs.cpp(250): warning C4244: 'return' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(254): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(430): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(442): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(454): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(520): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(599): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(600): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(601): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(602): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+maths_funcs.cpp(607): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
