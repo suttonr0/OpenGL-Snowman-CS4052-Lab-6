@@ -86,6 +86,11 @@ GLfloat snowman1_rotationy = 0.0;
 GLfloat marchDistance = 0.0;
 bool marchOrder = true;
 
+// Snowball stuff
+bool thrownSnowball = false;  // Has the snowball been thrown?
+vec3 snowballDir = vec3(0.0f, 0.0f, 0.0f);  // Direction to throw the snowball
+GLfloat snowballGravity = 0.0f;
+
 vec3 snowman1Pos = vec3(-10.0f, 0.0f, -10.0f);
 vec3 snowman2Pos = vec3(-5.0f, 0.0f, -10.0f);
 vec3 snowman3Pos = vec3(10.0f, 0.0f, 10.0f);
@@ -94,7 +99,7 @@ vec3 tree2Pos = vec3(7.0f, 0.0f, 8.0f);
 vec3 tree3Pos = vec3(-5.0f, 0.0f, 8.0f);
 vec3 snowballPos = vec3(-10.0f, 10.0f, -5.0f);
 
-vec3 cameraPosition = vec3(0, 2, -15);
+vec3 cameraPosition = vec3(0.0f, 2.0f, -15.0f);
 vec3 cameraDirection = vec3(0.0f, 0.0f, 1.0f); // start direction depends on camerarotationy, not this vector
 vec3 cameraUpVector = vec3(0.0f, 1.0f, 0.0f);
 
@@ -439,9 +444,9 @@ void display(){
 	
 	// -----------------------------------------------------------
 	// SNOWMEN
-	//   O
-	//  ( )
-	// (   )
+	//    O
+	//   ( )
+	//  (   )
 	// -----------------------------------------------------------
 	glBindTexture(GL_TEXTURE_2D, SNOWMAN_TEX_ID);
 	glUniform1i(texture_location, 0);
@@ -472,19 +477,37 @@ void display(){
 	// ------------------
 	// Snowball
 	// 
-	//   o
+	//    o
 	// ------------------
 	mat4 snowball_local = identity_mat4();
+	snowball_local = scale(snowball_local, vec3(0.2, 0.2, 0.2));
 	snowball_local = translate(snowball_local, snowballPos);
 	mat4 snowball_global = snowball_local;
 	// update uniforms & draw
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowball_global.m);
-	glBindVertexArray(SNOWBALL_ID);
-	glDrawArrays(GL_TRIANGLES, 0, snowball_vertex_count);
-
+	if (thrownSnowball == false) {
+		snowballPos = cameraPosition;
+		snowballPos.v[1] = snowballPos.v[1] - 0.3;
+		// Move snowball left a bit relative to camera direction
+		snowballPos.v[0] = snowballPos.v[0] - 0.4*cameraDirection.v[2];  // x1' = x1 + y2
+		snowballPos.v[2] = snowballPos.v[2] + 0.4*cameraDirection.v[0];  // y1' = y1 - x2
+	}
+	else if (snowballPos.v[1] > -1.0) {
+		snowballPos = snowballPos + snowballDir*0.01;
+		snowballDir.v[1] = snowballDir.v[1] - snowballGravity;  // Was changing snowball position
+		printf(" %f ", snowballGravity);
+		snowballGravity = snowballGravity + 0.000004f;
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowball_global.m);
+		glBindVertexArray(SNOWBALL_ID);
+		glDrawArrays(GL_TRIANGLES, 0, snowball_vertex_count);
+	}
+	else {
+		thrownSnowball = false;
+	}
+	
 	// ------------------------
 	// ARMS
-	// 
+	//  _____/_
+	//       \
 	// ------------------------
 	// ARMS FOR SNOWMAN 1
 
@@ -591,6 +614,7 @@ void updateScene() {
 		}
 	}	
 
+	// Snowman - Tree Collision
 	GLfloat snowman1ToTree1 = xz_length(snowman1Pos - tree1Pos);
 	GLfloat snowman1ToTree2 = xz_length(snowman1Pos - tree2Pos);
 	GLfloat snowman1ToTree3 = xz_length(snowman1Pos - tree3Pos);
@@ -599,6 +623,8 @@ void updateScene() {
 	}
 
 	snowman1_rotationy += 0.1;
+
+	// Snowball - Ground Collision
 
 	// Draw the next frame
 	glutPostRedisplay();
@@ -654,8 +680,15 @@ void processNormalKeys(unsigned char key, int x, int y)
 		// Rotate clockwise aboutengl y-axis (turn right)
 		camerarotationy -= 0.030f;
 	}
+	if (key == 'r') {
+		if (thrownSnowball == false) {
+			snowballGravity = 0.0f;
+			snowballDir = normalise(cameraDirection) * 5;
+			thrownSnowball = true;
+		}
+	}
 
-	// COLLISION CALCULATIONS
+	// CAMERA COLLISION CALCULATIONS
 	// "FOR LOOP" THIS WITH A VECTOR OF OBJECT POSITIONS
 	GLfloat snowman1Collision = xz_length(cameraPosition - snowman1Pos);
 	GLfloat snowman2Collision = xz_length(cameraPosition - snowman2Pos);

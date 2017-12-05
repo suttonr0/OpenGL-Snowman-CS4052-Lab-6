@@ -73,7 +73,7 @@ void main () {
 	float specular_factor = pow (dot_prod_specular, specular_exponent);
 	vec3 Is = Ls * Ks * specular_factor; // final specular intensity	
 	
-	// final colour
+	// final colour  
 	vec4 frag_colour = vec4 (Id + Is + Ia, 1.0);  // linear combination of ambient, diffuse and specular
 	
 	fragment_colour	= frag_colour * texture_vec;
