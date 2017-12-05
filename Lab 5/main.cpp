@@ -80,6 +80,9 @@ GLfloat camerarotationy = 0.0f;
 bool armSwitch = true;
 GLfloat armAngle = 0.0f;
 GLfloat snowman1_rotationy = 0.0;
+GLfloat marchDistance = 0.0;
+bool marchOrder = true;
+
 vec3 snowman1Pos = vec3(-10.0f, 0.0f, -10.0f);
 vec3 snowman2Pos = vec3(-5.0f, 0.0f, -10.0f);
 vec3 snowman3Pos = vec3(10.0f, 0.0f, 10.0f);
@@ -523,6 +526,40 @@ void updateScene() {
 		}
 	}
 
+	// Basic AI
+	vec3 oldSnowman1Pos = snowman1Pos;
+	vec3 vectorToSnowman1 = snowman1Pos - cameraPosition;
+	vectorToSnowman1.v[1] = 0;  // Project to xz plane
+	GLfloat snowman1Collision = xz_length(vectorToSnowman1);
+	
+	// BASIC AI CALCULATIONS
+	if (snowman1Collision < 10.0) {
+		snowman1Pos = snowman1Pos + (normalise(vectorToSnowman1)*0.003);
+	}
+	else {
+		if (marchOrder == true) {
+			marchDistance += 0.001;
+			snowman1Pos.v[2] = snowman1Pos.v[2] + 0.002;
+		}
+		if (marchOrder == false) {
+			marchDistance -= 0.001;
+			snowman1Pos.v[2] = snowman1Pos.v[2] - 0.002;
+		}
+		if (marchDistance > 10) {
+			marchOrder = false;
+		}
+		if (marchDistance < 0) {
+			marchOrder = true;
+		}
+	}	
+
+	GLfloat snowman1ToTree1 = xz_length(snowman1Pos - tree1Pos);
+	GLfloat snowman1ToTree2 = xz_length(snowman1Pos - tree2Pos);
+	GLfloat snowman1ToTree3 = xz_length(snowman1Pos - tree3Pos);
+	if (snowman1ToTree1 < 3.0 || snowman1ToTree2 < 3.0 || snowman1ToTree3 < 3.0) {
+		snowman1Pos = oldSnowman1Pos;
+	}
+
 	snowman1_rotationy += 0.1;
 
 	// Draw the next frame
@@ -587,6 +624,7 @@ void processNormalKeys(unsigned char key, int x, int y)
 	GLfloat tree1Collision = xz_length(cameraPosition - tree1Pos);
 	GLfloat tree2Collision = xz_length(cameraPosition - tree2Pos);
 	GLfloat tree3Collision = xz_length(cameraPosition - tree3Pos);
+	GLfloat snowman1ToTree = xz_length(snowman1Pos - tree1Pos);
 	if (snowman1Collision < 2.0 || snowman2Collision < 2.0 || snowman3Collision < 2.0) {
 		cameraPosition = oldCameraPosition;
 	}
