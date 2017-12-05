@@ -12,6 +12,7 @@
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
 #include <stdio.h>
+
 #include <math.h>
 #include <vector> // STL dynamic memory.
 
@@ -72,7 +73,7 @@ GLuint TREE_TEX_ID = 2;
 GLuint SNOWMAN_TEX_ID = 3;
 GLuint SNOWMAN_ARM_TEX_ID = 4;
 
-int width = 800;
+int width = 1200;
 int height = 800;
 
 GLuint loc1, loc2, loc3;
@@ -90,6 +91,7 @@ bool marchOrder = true;
 bool thrownSnowball = false;  // Has the snowball been thrown?
 vec3 snowballDir = vec3(0.0f, 0.0f, 0.0f);  // Direction to throw the snowball
 GLfloat snowballGravity = 0.0f;
+vec3 hitLocation = vec3(0.0f, 0.0f, 0.0f); 
 
 vec3 snowman1Pos = vec3(-10.0f, 0.0f, -10.0f);
 vec3 snowman2Pos = vec3(-5.0f, 0.0f, -10.0f);
@@ -382,14 +384,15 @@ void display(){
 	mat4 persp_proj = perspective(45.0, (float)width/(float)height, 0.1, 100.0);
 	
 
+	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+
 	// GROUND 1 ------------------------
 	mat4 ground_matrix = identity_mat4 ();
 	ground_matrix = scale(ground_matrix, vec3(15.0, 15.0, 15.0));
 	ground_matrix = rotate_x_deg(ground_matrix, -90);
 	ground_matrix = translate(ground_matrix, vec3(0.0, 1.5, 0.0));
 	// update uniforms & draw
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
 	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, ground_matrix.m);
 	glUniform1i(no_specular, 1);  // No specular component for ground
 
@@ -494,7 +497,6 @@ void display(){
 	else if (snowballPos.v[1] > -1.0) {
 		snowballPos = snowballPos + snowballDir*0.01;
 		snowballDir.v[1] = snowballDir.v[1] - snowballGravity;  // Was changing snowball position
-		printf(" %f ", snowballGravity);
 		snowballGravity = snowballGravity + 0.000004f;
 		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowball_global.m);
 		glBindVertexArray(SNOWBALL_ID);
@@ -557,7 +559,6 @@ void display(){
 	glBindVertexArray(SNOWMAN_ARM_ID);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 
-
     glutSwapBuffers();
 }
 
@@ -587,7 +588,7 @@ void updateScene() {
 		}
 	}
 
-	// Basic AI
+	// Basic Snowman AI
 	vec3 oldSnowman1Pos = snowman1Pos;
 	vec3 vectorToSnowman1 = snowman1Pos - cameraPosition;
 	vectorToSnowman1.v[1] = 0;  // Project to xz plane
@@ -622,9 +623,27 @@ void updateScene() {
 		snowman1Pos = oldSnowman1Pos;
 	}
 
-	snowman1_rotationy += 0.1;
+	// Snowball Collision
+	GLfloat SbSnowman1Coll = xz_length(snowballPos - snowman1Pos);
+	GLfloat SbSnowman2Coll = xz_length(snowballPos - snowman2Pos);
+	GLfloat SbSnowman3Coll = xz_length(snowballPos - snowman3Pos);
+	GLfloat Sbtree1Collision = xz_length(snowballPos - tree1Pos);
+	GLfloat Sbtree2Collision = xz_length(snowballPos - tree2Pos);
+	GLfloat Sbtree3Collision = xz_length(snowballPos - tree3Pos);
+	// Collision with snowmen
+	if (SbSnowman1Coll < 1.0 || SbSnowman2Coll < 1.0 || SbSnowman3Coll < 1.0) {
+		thrownSnowball = false;
+		hitLocation = snowballPos;
+		printf("x: %f z: %f ", hitLocation.v[0], hitLocation.v[2]);
+	}
+	// Collision with trees
+	else if (Sbtree1Collision  < 1.5 || Sbtree2Collision < 1.5 || Sbtree3Collision < 1.5) {
+		thrownSnowball = false;
+		hitLocation = snowballPos;
+		printf("x: %f z: %f ", hitLocation.v[0], hitLocation.v[2]);
+	}
 
-	// Snowball - Ground Collision
+	snowman1_rotationy += 0.1;
 
 	// Draw the next frame
 	glutPostRedisplay();
@@ -697,13 +716,21 @@ void processNormalKeys(unsigned char key, int x, int y)
 	GLfloat tree2Collision = xz_length(cameraPosition - tree2Pos);
 	GLfloat tree3Collision = xz_length(cameraPosition - tree3Pos);
 	GLfloat snowman1ToTree = xz_length(snowman1Pos - tree1Pos);
+	// Collision with snowmen
 	if (snowman1Collision < 2.0 || snowman2Collision < 2.0 || snowman3Collision < 2.0) {
 		cameraPosition = oldCameraPosition;
 	}
+	// Collision with trees
 	else if (tree1Collision < 3.0 || tree2Collision < 3.0 || tree3Collision < 3.0) {
 		cameraPosition = oldCameraPosition;
 	}
+	// collision with world boundary
+	else if (abs(cameraPosition.v[0]) > 50.0 || abs(cameraPosition.v[2]) > 50.0) {
+		cameraPosition = oldCameraPosition;
+	}
 
+	// Player position check (debug)
+	// printf("x: %f z: %f ", cameraPosition.v[0], cameraPosition.v[2]);
 	glutPostRedisplay();
 }
 
@@ -713,7 +740,7 @@ int main(int argc, char** argv){
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
     glutInitWindowSize(width, height);
-    glutCreateWindow("Hello Triangle");
+    glutCreateWindow("Merry Christmas!");
 
 	// Tell glut where the display function is
 	glutDisplayFunc(display);
