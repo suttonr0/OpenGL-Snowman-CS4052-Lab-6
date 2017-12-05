@@ -38,7 +38,7 @@
 ----------------------------------------------------------------------------*/
 
 #define GROUND_TEXTURE "GroundSnow2.png"
-#define SNOWMAN_TEXTURE "SnowmanTexture.png"
+#define SNOWMAN_TEXTURE "SnowmanTexture2.png"
 #define TREE_TEXTURE "pineTree.png"
 #define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
 /*----------------------------------------------------------------------------
@@ -368,7 +368,8 @@ void display(){
 	int view_mat_location = glGetUniformLocation (shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation (shaderProgramID, "proj");
 	int texture_location = glGetUniformLocation(shaderProgramID, "tex");
-	
+	int no_specular = glGetUniformLocation(shaderProgramID, "no_specular");
+
 	// Root of the Hierarchy
 	cameraDirection.v[0] = sin(camerarotationy);
 	cameraDirection.v[2] = cos(camerarotationy);
@@ -385,6 +386,7 @@ void display(){
 	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
 	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, ground_matrix.m);
+	glUniform1i(no_specular, 1);  // No specular component for ground
 
 	glBindTexture(GL_TEXTURE_2D, GROUND_TEX_ID);
 	glUniform1i(texture_location, 0);
@@ -410,6 +412,7 @@ void display(){
 	tree1_local = translate(tree1_local, tree1Pos);
 	mat4 tree1_global = tree1_local;
 	// update uniforms & draw
+	glUniform1i(no_specular, 0);  // Specular component for rest of models
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree1_global.m);
 	glBindVertexArray(TREE_ID);
 	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);

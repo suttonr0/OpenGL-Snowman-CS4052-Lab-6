@@ -1,0 +1,31 @@
+	/*
+	if(dot_prod > 0.75){
+		dot_prod = 0.75;
+	}
+	else if(dot_prod > 0.5){
+		dot_prod = 0.5;
+	}
+	else if(dot_prod > 0.25){
+		dot_prod = 0.25;
+	}
+	else{
+		dot_prod = 0.0;
+	}
+	*/
+
+
+
+
+
+	//if(dot(lookDirection, normal_eye2) > 0.5){
+	//	preToonFragColour = preToonFragColour * 0.5;
+	//}
+	//else if(dot(lookDirection, normal_eye2) > 0.0){
+	//	preToonFragColour = preToonFragColour * 0.625;
+	//}
+	//else if(dot(lookDirection, normal_eye2) > -0.5){
+	//	preToonFragColour = preToonFragColour * 0.75;
+	//}
+	//else if(dot(lookDirection, normal_eye2) > -1.0){
+	//	preToonFragColour = preToonFragColour * 1.0;
+	//}

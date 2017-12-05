@@ -1,6 +1,5 @@
 Treeset2:  https://free3d.com/3d-model/high-quality-realistic-tree-set-2-56906.html
 SnowmanTexture:  http://seamless-pixels.blogspot.ie/2012/03/seamless-snow-texture.html
-Arm Branch Texture: https://cgi.tutsplus.com/articles/speedtree-to-udk-creating-a-palm-tree-in-speedtree-and-importing-it-into-udk--cg-14179
 Arm2 Branch Texture: https://i.ytimg.com/vi/Nk0iIkWiaZU/maxresdefault.jpg
-Dark Green: http://www.solidbackgrounds.com/images/1600x1200/1600x1200-dark-green-solid-color-background.jpg
 Ground Snow Texture: https://previews.123rf.com/images/saiva/saiva1012/saiva101200021/8432843-real-snow-texture-Stock-Photo.jpg
+Snowman Texture 2: https://i.pinimg.com/originals/c5/3e/f7/c53ef748b9c2911acf295defbba5a240.jpg

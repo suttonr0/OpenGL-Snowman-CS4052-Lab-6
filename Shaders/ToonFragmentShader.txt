@@ -4,6 +4,7 @@ in vec2 Texcoord;
 in vec3 position_eye, normal_eye;
 uniform mat4 view;
 uniform sampler2D texture_for_shader;
+uniform int no_specular;
 
 // fixed point light properties
 
@@ -35,23 +36,45 @@ void main () {
 	vec3 distance_to_light_eye = light_position_eye - position_eye;
 	vec3 direction_to_light_eye = normalize (distance_to_light_eye);
 	float dot_prod = dot (direction_to_light_eye, normal_eye2);
-	dot_prod = max (dot_prod, 0.0);
+	//dot_prod = max (dot_prod, 0.0);	
+	if(dot_prod > 0.6){
+		dot_prod = 1.0;
+	}
+	else if(dot_prod > 0.2){
+		dot_prod = 0.75;
+	}
+	else if(dot_prod > -0.2){
+		dot_prod = 0.5;
+	}
+	else if(dot_prod > -0.6){
+		dot_prod = 0.25;
+	}
+	else{
+		dot_prod = 0.0;
+	}
+
 	vec3 Id = Ld * Kd * dot_prod; // final diffuse intensity
 
 	//specular intensity
 	vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye2);
 	vec3 surface_to_viewer_eye = normalize (-position_eye);
 	float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+	if(dot_prod_specular > 0.95){
+		dot_prod_specular = 1.00;
+	}
+	else{
+		dot_prod_specular = 0.0;
+	}
+	if(no_specular == 1){
+		dot_prod_specular = 0.0;
+	} 
 	dot_prod_specular = max (dot_prod_specular, 0.0);
+
 	float specular_factor = pow (dot_prod_specular, specular_exponent);
 	vec3 Is = Ls * Ks * specular_factor; // final specular intensity	
 	
 	// final colour
 	vec4 frag_colour = vec4 (Id + Is + Ia, 1.0);  // linear combination of ambient, diffuse and specular
 	
-	vec4 preToonFragColour = frag_colour * texture_vec;
-	//if(dot(lookDirection, normal_eye2) < 0.50){
-	//	preToonFragColour = preToonFragColour + vec4(0.5, 0.5, 0.5, 1.0);
-	//}
-	fragment_colour	= preToonFragColour;
+	fragment_colour	= frag_colour * texture_vec;
 }

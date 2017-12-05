@@ -1,19 +1,19 @@
 ﻿  main.cpp
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(190): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(376): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(494): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(504): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(516): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(526): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(552): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(558): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(572): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(576): warning C4305: '+=': truncation from 'double' to 'GLfloat'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(577): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(580): warning C4305: '-=': truncation from 'double' to 'GLfloat'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(581): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(598): warning C4305: '+=': truncation from 'double' to 'GLfloat'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(628): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(377): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(497): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(507): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(519): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(529): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(555): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(561): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(575): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(579): warning C4305: '+=': truncation from 'double' to 'GLfloat'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(580): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(583): warning C4305: '-=': truncation from 'double' to 'GLfloat'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(584): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(601): warning C4305: '+=': truncation from 'double' to 'GLfloat'
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(631): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
   Lab 5.vcxproj -> C:\.Trinity 4\CS4052 Computer Graphics\Lab 6\Lab 6 Code\Debug\Lab 5.exe
   Lab 5.vcxproj -> C:\.Trinity 4\CS4052 Computer Graphics\Lab 6\Lab 6 Code\Debug\Lab 5.pdb (Partial PDB)
