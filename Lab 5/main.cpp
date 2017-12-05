@@ -393,7 +393,7 @@ void display(){
 
 	mat4 tree1_local = identity_mat4();
 	tree1_local = rotate_x_deg(tree1_local, -90);
-	tree1_local = scale(tree1_local, vec3(2.5, 2.5, 2.5));
+	tree1_local = scale(tree1_local, vec3(2.0, 2.0, 2.0));
 	tree1_local = translate(tree1_local, tree1Pos);
 	mat4 tree1_global = tree1_local;
 	// update uniforms & draw
