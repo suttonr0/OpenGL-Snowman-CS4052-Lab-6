@@ -32,6 +32,7 @@
 #define SNOWMAN_MESH "UVSnowman.obj"
 #define GROUND_MESH "Ground2.dae"
 #define SNOWMAN_ARM_MESH "SnowmanArm.dae"
+#define SNOWBALL_MESH "Snowball.dae"
 /*----------------------------------------------------------------------------
 				   TEXTURES TO LOAD
 ----------------------------------------------------------------------------*/
@@ -48,6 +49,7 @@ int g_point_count = 0;
 int ground_count = 0;
 int tree_vertex_count = 0;
 int snowman_vertex_count = 0;
+int snowball_vertex_count = 0;
 int snowman_arm_vertex_count = 0;
 
 
@@ -63,6 +65,7 @@ GLuint GROUND_ID = 1;
 GLuint TREE_ID = 2;
 GLuint SNOWMAN_ID = 3;
 GLuint SNOWMAN_ARM_ID = 4;
+GLuint SNOWBALL_ID = 5;
 
 GLuint GROUND_TEX_ID = 1;
 GLuint TREE_TEX_ID = 2;
@@ -89,7 +92,7 @@ vec3 snowman3Pos = vec3(10.0f, 0.0f, 10.0f);
 vec3 tree1Pos = vec3(5.0f, 0.0f, -4.0f);
 vec3 tree2Pos = vec3(7.0f, 0.0f, 8.0f);
 vec3 tree3Pos = vec3(-5.0f, 0.0f, 8.0f);
-
+vec3 snowballPos = vec3(-10.0f, 10.0f, -5.0f);
 
 vec3 cameraPosition = vec3(0, 2, -15);
 vec3 cameraDirection = vec3(0.0f, 0.0f, 1.0f); // start direction depends on camerarotationy, not this vector
@@ -135,8 +138,12 @@ bool load_mesh (const char* file_name) {
 		ground_count = mesh->mNumVertices;
 	}
 	else if (file_name == SNOWMAN_ARM_MESH) {
-		printf("Found ground plane");
+		printf("Found snowman arm");
 		snowman_arm_vertex_count = mesh->mNumVertices;
+	}
+	else if (file_name == SNOWBALL_MESH) {
+		printf("Found snowball");
+		snowball_vertex_count = mesh->mNumVertices;
 	}
 	else
 		g_point_count = mesh->mNumVertices;
@@ -238,8 +245,8 @@ GLuint CompileShaders()
     }
 
 	// Create two shader objects, one for the vertex, and one for the fragment shader
-    AddShader(shaderProgramID, "../Shaders/phongVertexShader.txt", GL_VERTEX_SHADER);
-    AddShader(shaderProgramID, "../Shaders/phongFragmentShader.txt", GL_FRAGMENT_SHADER);
+    AddShader(shaderProgramID, "../Shaders/ToonVertexShader.txt", GL_VERTEX_SHADER);
+    AddShader(shaderProgramID, "../Shaders/ToonFragmentShader.txt", GL_FRAGMENT_SHADER);
 
     GLint Success = 0;
     GLchar ErrorLog[1024] = { 0 };
@@ -385,7 +392,13 @@ void display(){
 	glBindVertexArray(GROUND_ID);
 	glDrawArrays (GL_TRIANGLES, 0, ground_count);
 
+	// ----------------------------------------
 	// TREES
+	//     ^
+	//    / \
+	//   /   \
+	//     |
+	// ----------------------------------------
 
 	//Declare your uniform variables that will be used in your shader
 	glBindTexture(GL_TEXTURE_2D, TREE_TEX_ID);
@@ -420,9 +433,13 @@ void display(){
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, tree3_global.m);
 	glBindVertexArray(TREE_ID);
 	glDrawArrays(GL_TRIANGLES, 0, tree_vertex_count);
-				
+	
+	// -----------------------------------------------------------
 	// SNOWMEN
-
+	//   O
+	//  ( )
+	// (   )
+	// -----------------------------------------------------------
 	glBindTexture(GL_TEXTURE_2D, SNOWMAN_TEX_ID);
 	glUniform1i(texture_location, 0);
 
@@ -449,12 +466,29 @@ void display(){
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman3_global.m);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_vertex_count);
 
+	// ------------------
+	// Snowball
+	// 
+	//   o
+	// ------------------
+	mat4 snowball_local = identity_mat4();
+	snowball_local = translate(snowball_local, snowballPos);
+	mat4 snowball_global = snowball_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowball_global.m);
+	glBindVertexArray(SNOWBALL_ID);
+	glDrawArrays(GL_TRIANGLES, 0, snowball_vertex_count);
+
+	// ------------------------
+	// ARMS
+	// 
+	// ------------------------
+	// ARMS FOR SNOWMAN 1
 
 	//Declare your uniform variables that will be used in your shader
 	glBindTexture(GL_TEXTURE_2D, SNOWMAN_ARM_TEX_ID);
 	glUniform1i(texture_location, 0);
 
-	// ARMS FOR SNOWMAN 1
 	mat4 snowman_arm_11_local = identity_mat4();
 	snowman_arm_11_local = rotate_x_deg(snowman_arm_11_local, 90-armAngle);
 	snowman_arm_11_local = scale(snowman_arm_11_local, vec3(0.2, 0.2, 0.2));
@@ -496,7 +530,8 @@ void display(){
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, snowman_arm_22_global.m);
 	glBindVertexArray(SNOWMAN_ARM_ID);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
-	
+
+
     glutSwapBuffers();
 }
 
@@ -576,6 +611,7 @@ void init()
 	generateObjectBufferMesh(TREE_ID, TREE_MESH, tree_vertex_count);
 	generateObjectBufferMesh(SNOWMAN_ID, SNOWMAN_MESH, snowman_vertex_count);
 	generateObjectBufferMesh(SNOWMAN_ARM_ID, SNOWMAN_ARM_MESH, snowman_arm_vertex_count);
+	generateObjectBufferMesh(SNOWBALL_ID, SNOWBALL_MESH, snowball_vertex_count);
 
 	loadTextures(GROUND_TEX_ID, GROUND_TEXTURE);
 	loadTextures(TREE_TEX_ID, TREE_TEXTURE);
