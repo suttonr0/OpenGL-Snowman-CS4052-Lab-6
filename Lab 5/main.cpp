@@ -38,7 +38,7 @@
 				   TEXTURES TO LOAD
 ----------------------------------------------------------------------------*/
 
-#define GROUND_TEXTURE "GroundSnow2.png"
+#define GROUND_TEXTURE "GroundSnow3.png"
 #define SNOWMAN_TEXTURE "SnowmanTexture2.png"
 #define TREE_TEXTURE "pineTree.png"
 #define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
@@ -81,13 +81,16 @@ GLfloat rotate_y = 0.0f;
 GLfloat translate_y = 0.0f;
 GLfloat camerarotationy = 0.0f;
 
+// Snowman AI 
 bool armSwitch = true;
 GLfloat armAngle = 0.0f;
 GLfloat snowman1_rotationy = 0.0;
 GLfloat marchDistance = 0.0;
 bool marchOrder = true;
+bool fleeing = false;
+GLfloat fleeTime = 0.0;
 
-// Snowball stuff
+// Snowball parameters
 bool thrownSnowball = false;  // Has the snowball been thrown?
 vec3 snowballDir = vec3(0.0f, 0.0f, 0.0f);  // Direction to throw the snowball
 GLfloat snowballGravity = 0.0f;
@@ -518,7 +521,10 @@ void display(){
 	glUniform1i(texture_location, 0);
 
 	mat4 snowman_arm_11_local = identity_mat4();
-	snowman_arm_11_local = rotate_x_deg(snowman_arm_11_local, 90-armAngle);
+	if(fleeing)
+		snowman_arm_11_local = rotate_x_deg(snowman_arm_11_local, 330 - armAngle);
+	else
+		snowman_arm_11_local = rotate_x_deg(snowman_arm_11_local, 90 - armAngle);
 	snowman_arm_11_local = scale(snowman_arm_11_local, vec3(0.2, 0.2, 0.2));
 	snowman_arm_11_local = translate(snowman_arm_11_local, vec3(0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_11_global = snowman1_global * snowman_arm_11_local;
@@ -528,7 +534,10 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 
 	mat4 snowman_arm_12_local = identity_mat4();
-	snowman_arm_12_local = rotate_x_deg(snowman_arm_12_local, armAngle);
+	if(fleeing)
+		snowman_arm_12_local = rotate_x_deg(snowman_arm_12_local, 240 + armAngle);
+	else
+		snowman_arm_12_local = rotate_x_deg(snowman_arm_12_local, armAngle);
 	snowman_arm_12_local = scale(snowman_arm_12_local, vec3(0.2, 0.2, 0.2));
 	snowman_arm_12_local = translate(snowman_arm_12_local, vec3(-0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_12_global = snowman1_global * snowman_arm_12_local;
@@ -540,7 +549,10 @@ void display(){
 
 	// ARMS FOR SNOWMAN 2
 	mat4 snowman_arm_21_local = identity_mat4();
-	snowman_arm_21_local = rotate_x_deg(snowman_arm_21_local, 90 - armAngle);
+	if (fleeing)
+		snowman_arm_21_local = rotate_x_deg(snowman_arm_21_local, 330 - armAngle);
+	else
+		snowman_arm_21_local = rotate_x_deg(snowman_arm_21_local, 90 - armAngle);
 	snowman_arm_21_local = scale(snowman_arm_21_local, vec3(0.2, 0.2, 0.2));
 	snowman_arm_21_local = translate(snowman_arm_21_local, vec3(0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_21_global = snowman2_global * snowman_arm_21_local;
@@ -550,7 +562,10 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 
 	mat4 snowman_arm_22_local = identity_mat4();
-	snowman_arm_22_local = rotate_x_deg(snowman_arm_22_local, armAngle);
+	if (fleeing)
+		snowman_arm_22_local = rotate_x_deg(snowman_arm_22_local, 240 + armAngle);
+	else
+		snowman_arm_22_local = rotate_x_deg(snowman_arm_22_local, armAngle);
 	snowman_arm_22_local = scale(snowman_arm_22_local, vec3(0.2, 0.2, 0.2));
 	snowman_arm_22_local = translate(snowman_arm_22_local, vec3(-0.8f, 2.5f, 0.0f));
 	mat4 snowman_arm_22_global = snowman2_global * snowman_arm_22_local;
@@ -590,9 +605,13 @@ void updateScene() {
 
 	// Basic Snowman AI
 	vec3 oldSnowman1Pos = snowman1Pos;
+	vec3 oldSnowman2Pos = snowman2Pos;
 	vec3 vectorToSnowman1 = snowman1Pos - cameraPosition;
+	vec3 vectorToSnowman2 = snowman2Pos - cameraPosition;
 	vectorToSnowman1.v[1] = 0;  // Project to xz plane
+	vectorToSnowman2.v[1] = 0;  // Project to xz plane
 	GLfloat snowman1Collision = xz_length(vectorToSnowman1);
+	GLfloat snowman2Collision = xz_length(vectorToSnowman2);
 	
 	// BASIC AI CALCULATIONS
 	if (snowman1Collision < 10.0) {
@@ -615,14 +634,6 @@ void updateScene() {
 		}
 	}	
 
-	// Snowman - Tree Collision
-	GLfloat snowman1ToTree1 = xz_length(snowman1Pos - tree1Pos);
-	GLfloat snowman1ToTree2 = xz_length(snowman1Pos - tree2Pos);
-	GLfloat snowman1ToTree3 = xz_length(snowman1Pos - tree3Pos);
-	if (snowman1ToTree1 < 3.0 || snowman1ToTree2 < 3.0 || snowman1ToTree3 < 3.0) {
-		snowman1Pos = oldSnowman1Pos;
-	}
-
 	// Snowball Collision
 	GLfloat SbSnowman1Coll = xz_length(snowballPos - snowman1Pos);
 	GLfloat SbSnowman2Coll = xz_length(snowballPos - snowman2Pos);
@@ -635,6 +646,7 @@ void updateScene() {
 		thrownSnowball = false;
 		hitLocation = snowballPos;
 		printf("x: %f z: %f ", hitLocation.v[0], hitLocation.v[2]);
+		fleeing = true;
 	}
 	// Collision with trees
 	else if (Sbtree1Collision  < 1.5 || Sbtree2Collision < 1.5 || Sbtree3Collision < 1.5) {
@@ -643,6 +655,39 @@ void updateScene() {
 		printf("x: %f z: %f ", hitLocation.v[0], hitLocation.v[2]);
 	}
 
+	if (fleeing) {
+		snowman1Pos = snowman1Pos + (normalise(vectorToSnowman1)*0.01);
+		snowman2Pos = snowman2Pos + (normalise(vectorToSnowman2)*0.01);
+		fleeTime += 0.0002;
+		if (fleeTime > 1.0) {
+			fleeing = false;
+			fleeTime = 0.0;
+		}
+	}
+
+	// Snowman1 - Tree Collision and world boundary collision
+	GLfloat snowman1ToTree1 = xz_length(snowman1Pos - tree1Pos);
+	GLfloat snowman1ToTree2 = xz_length(snowman1Pos - tree2Pos);
+	GLfloat snowman1ToTree3 = xz_length(snowman1Pos - tree3Pos);
+	if (snowman1ToTree1 < 3.0 || snowman1ToTree2 < 3.0 || snowman1ToTree3 < 3.0) {
+		snowman1Pos = oldSnowman1Pos;
+	}
+	if (abs(snowman1Pos.v[0]) > 50 || abs(snowman1Pos.v[2]) > 50) {
+		snowman1Pos = oldSnowman1Pos;
+	}
+
+	// Snowman2 - Tree Collision and world boundary collision
+	GLfloat snowman2ToTree1 = xz_length(snowman2Pos - tree1Pos);
+	GLfloat snowman2ToTree2 = xz_length(snowman2Pos - tree2Pos);
+	GLfloat snowman2ToTree3 = xz_length(snowman2Pos - tree3Pos);
+	if (snowman2ToTree1 < 3.0 || snowman2ToTree2 < 3.0 || snowman2ToTree3 < 3.0) {
+		snowman2Pos = oldSnowman2Pos;
+	}
+	if (abs(snowman1Pos.v[0]) > 50 || abs(snowman1Pos.v[2]) > 50) {
+		snowman1Pos = oldSnowman1Pos;
+	}
+
+	// Spin snowman 2
 	snowman1_rotationy += 0.1;
 
 	// Draw the next frame
