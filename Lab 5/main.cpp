@@ -669,7 +669,12 @@ void updateScene() {
 	GLfloat snowman1ToTree1 = xz_length(snowman1Pos - tree1Pos);
 	GLfloat snowman1ToTree2 = xz_length(snowman1Pos - tree2Pos);
 	GLfloat snowman1ToTree3 = xz_length(snowman1Pos - tree3Pos);
+	GLfloat snowman1Tosnow2 = xz_length(snowman1Pos - snowman2Pos);
+	GLfloat snowman1Tosnow3 = xz_length(snowman1Pos - snowman3Pos);
 	if (snowman1ToTree1 < 3.0 || snowman1ToTree2 < 3.0 || snowman1ToTree3 < 3.0) {
+		snowman1Pos = oldSnowman1Pos;
+	}
+	if (snowman1Tosnow2 < 2.0 || snowman1Tosnow3 < 2.0) {
 		snowman1Pos = oldSnowman1Pos;
 	}
 	if (abs(snowman1Pos.v[0]) > 50 || abs(snowman1Pos.v[2]) > 50) {
@@ -680,7 +685,12 @@ void updateScene() {
 	GLfloat snowman2ToTree1 = xz_length(snowman2Pos - tree1Pos);
 	GLfloat snowman2ToTree2 = xz_length(snowman2Pos - tree2Pos);
 	GLfloat snowman2ToTree3 = xz_length(snowman2Pos - tree3Pos);
+	GLfloat snowman2Tosnow1 = xz_length(snowman2Pos - snowman1Pos);
+	GLfloat snowman2Tosnow3 = xz_length(snowman2Pos - snowman3Pos);
 	if (snowman2ToTree1 < 3.0 || snowman2ToTree2 < 3.0 || snowman2ToTree3 < 3.0) {
+		snowman2Pos = oldSnowman2Pos;
+	}
+	if (snowman2Tosnow1 < 2.0 || snowman2Tosnow3 < 2.0) {
 		snowman2Pos = oldSnowman2Pos;
 	}
 	if (abs(snowman1Pos.v[0]) > 50 || abs(snowman1Pos.v[2]) > 50) {
