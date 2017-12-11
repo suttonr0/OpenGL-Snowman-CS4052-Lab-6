@@ -35,7 +35,7 @@
 #define SNOWMAN_ARM_MESH "SnowmanArm.dae"
 #define SNOWBALL_MESH "Snowball.dae"
 #define FIRELOGS_MESH "firelogs.dae"
-#define FIREFLAME_MESH "fireflame.dae"
+#define FIREFLAME_MESH "fireflame2.dae"
 
 /*----------------------------------------------------------------------------
 				   TEXTURES TO LOAD
@@ -400,9 +400,8 @@ void display(){
 	int proj_mat_location = glGetUniformLocation (shaderProgramID, "proj");
 	int texture_location = glGetUniformLocation(shaderProgramID, "tex");
 	int no_specular = glGetUniformLocation(shaderProgramID, "no_specular");
-	int fire_lighting = glGetUniformLocation(shaderProgramID, "fire_lighting");
-
-	glUniform1f(fire_lighting, fire_value);
+	int no_diffuse = glGetUniformLocation(shaderProgramID, "no_diffuse");
+	int full_ambient = glGetUniformLocation(shaderProgramID, "full_ambient");
 
 	// Root of the Hierarchy
 	cameraDirection.v[0] = sin(camerarotationy);
@@ -514,6 +513,7 @@ void display(){
 	snowball_local = translate(snowball_local, snowballPos);
 	mat4 snowball_global = snowball_local;
 	// update uniforms & draw
+	// Consider moving snowball logic to update loop, not draw loop
 	if (thrownSnowball == false) {
 		snowballPos = cameraPosition;
 		// Move snowball down and left a bit relative to camera direction
@@ -608,11 +608,12 @@ void display(){
 	glBindVertexArray(FIRELOGS_ID);
 	glDrawArrays(GL_TRIANGLES, 0, firelogs_vertex_count);
 
+	// Flame
 	mat4 flame_local = identity_mat4();
 	flame_local = rotate_x_deg(flame_local, -45);
 	flame_local = rotate_z_deg(flame_local, 35);
-	flame_local = scale(flame_local, vec3(0.7, 0.7, 0.7));
-	flame_local = translate(flame_local, vec3(0, 1.5, 0));
+	flame_local = scale(flame_local, vec3(0.7 + (0.7 * fire_value / 3.0), 0.7 * fire_value, 0.7 + (0.7 * fire_value / 3.0)));
+	flame_local = translate(flame_local, vec3(0, 1.0, 0));
 	mat4 flame_global = flame_local;
 	// update uniforms & draw
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, flame_global.m);
@@ -620,10 +621,16 @@ void display(){
 	glBindTexture(GL_TEXTURE_2D, FIREFLAME_TEX_ID);
 	glUniform1i(texture_location, 0);
 
+	glUniform1i(no_specular, 1);  // No specular component for fire
+	glUniform1i(no_diffuse, 1);  // No diffuse for fire
+	glUniform1i(full_ambient, 1);
+
 	glBindVertexArray(FIREFLAME_ID);
 	glDrawArrays(GL_TRIANGLES, 0, fireflame_vertex_count);
 
-
+	glUniform1i(no_specular, 0);  // No specular component for fire
+	glUniform1i(no_diffuse, 0);  // No diffuse for fire
+	glUniform1i(full_ambient, 0);  // Full ambient reflection
     glutSwapBuffers();
 }
 
@@ -684,19 +691,17 @@ void updateScene() {
 		}
 	}	
 
-	// Day-night cycle?
-	if (fire_inc) {
-		fire_value += 0.0002;
-	}
-	else{
-		fire_value -= 0.0002;
-	}
+	// Flame size random generation
 	if (fire_value > 0.99) {
-		fire_inc = false;
+		fire_value = fire_value - 0.0005 * (rand() % 100);
 	}
-	if (fire_value < 0.05) {
-		fire_inc = true;
+	if (fire_value < 0.85) {
+		fire_value = fire_value + 0.0005 * (rand() % 100);
 	}
+	else {
+		fire_value = fire_value + 0.0005 * (rand() % 100 - 50);
+	}
+	
 
 	// Snowball Collision
 	GLfloat SbSnowman1Coll = xz_length(snowballPos - snowman1Pos);

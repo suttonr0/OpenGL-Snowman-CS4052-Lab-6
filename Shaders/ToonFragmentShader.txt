@@ -5,24 +5,28 @@ in vec3 position_eye, normal_eye;
 uniform mat4 view;
 uniform sampler2D texture_for_shader;
 uniform int no_specular;
-uniform float fire_lighting;
+uniform int no_diffuse;
+uniform int full_ambient;
 
 // fixed point light properties
 
-vec3 light_position_world = vec3 (0.0, 20.0, 2.0);
+vec3 light_position_world = vec3 (0.0, 1.0, 0.0); // was 0, 20, 2
 vec3 Ls = vec3 (1.0, 1.0, 1.0); // white specular colour
 vec3 Ld = vec3 (0.5, 0.5, 0.5); // dull white diffuse light colour
-vec3 La = vec3 (0.5, 0.5, 0.5); // grey ambient colour
+vec3 La = vec3 (1.0, 1.0, 1.0); // white ambient colour
 
 // surface reflectance
 vec3 Ks = vec3 (1.0, 1.0, 1.0); // fully reflect specular light
 vec3 Kd = vec3 (0.5, 0.5, 0.7); // blueish grey surface reflectance
-vec3 Ka = vec3 (1.0, 1.0, 1.0); // fully reflect ambient light
+vec3 Ka = vec3 (0.5, 0.5, 0.5); // partial reflectance of ambient
 float specular_exponent = 20.0; // specular 'power'
 
 out vec4 fragment_colour;  // Output color of fragment
 
 void main () {
+	if (full_ambient == 1){
+		Ka = vec3(1.0, 1.0, 1.0);
+	}
 	vec3 lookDirection = vec3(view[2][0], view[2][1], view[2][2]);
 	vec3 normal_eye2 = normalize(normal_eye);
 	// Texture vector
@@ -53,6 +57,9 @@ void main () {
 	else{
 		dot_prod = 0.0;
 	}
+	if(no_diffuse == 1){
+		dot_prod = 0.0;
+	} 
 
 	vec3 Id = Ld * Kd * dot_prod; // final diffuse intensity
 
@@ -76,7 +83,5 @@ void main () {
 	
 	// final colour    
 	vec4 frag_colour = vec4 (Is + Id + Ia, 1.0);  // linear combination of ambient, diffuse and specular
-	vec4 pre_fire_colour = frag_colour * texture_vec;
-	
-	fragment_colour	= fire_lighting * pre_fire_colour;
+	fragment_colour	= frag_colour * texture_vec;
 }
