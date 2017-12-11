@@ -492,8 +492,8 @@ void display(){
 	// update uniforms & draw
 	if (thrownSnowball == false) {
 		snowballPos = cameraPosition;
+		// Move snowball down and left a bit relative to camera direction
 		snowballPos.v[1] = snowballPos.v[1] - 0.3;
-		// Move snowball left a bit relative to camera direction
 		snowballPos.v[0] = snowballPos.v[0] - 0.4*cameraDirection.v[2];  // x1' = x1 + y2
 		snowballPos.v[2] = snowballPos.v[2] + 0.4*cameraDirection.v[0];  // y1' = y1 - x2
 	}
@@ -619,14 +619,14 @@ void updateScene() {
 	}
 	else {
 		if (marchOrder == true) {
-			marchDistance += 0.001;
+			marchDistance += 0.002;
 			snowman1Pos.v[2] = snowman1Pos.v[2] + 0.002;
 		}
 		if (marchOrder == false) {
-			marchDistance -= 0.001;
+			marchDistance -= 0.002;
 			snowman1Pos.v[2] = snowman1Pos.v[2] - 0.002;
 		}
-		if (marchDistance > 10) {
+		if (marchDistance > 20) {
 			marchOrder = false;
 		}
 		if (marchDistance < 0) {
@@ -693,11 +693,11 @@ void updateScene() {
 	if (snowman2Tosnow1 < 2.0 || snowman2Tosnow3 < 2.0) {
 		snowman2Pos = oldSnowman2Pos;
 	}
-	if (abs(snowman1Pos.v[0]) > 50 || abs(snowman1Pos.v[2]) > 50) {
-		snowman1Pos = oldSnowman1Pos;
+	if (abs(snowman2Pos.v[0]) > 50 || abs(snowman2Pos.v[2]) > 50) {
+		snowman2Pos = oldSnowman2Pos;
 	}
 
-	// Spin snowman 2
+	// Spin snowman 1
 	snowman1_rotationy += 0.1;
 
 	// Draw the next frame
@@ -763,14 +763,12 @@ void processNormalKeys(unsigned char key, int x, int y)
 	}
 
 	// CAMERA COLLISION CALCULATIONS
-	// "FOR LOOP" THIS WITH A VECTOR OF OBJECT POSITIONS
 	GLfloat snowman1Collision = xz_length(cameraPosition - snowman1Pos);
 	GLfloat snowman2Collision = xz_length(cameraPosition - snowman2Pos);
 	GLfloat snowman3Collision = xz_length(cameraPosition - snowman3Pos);
 	GLfloat tree1Collision = xz_length(cameraPosition - tree1Pos);
 	GLfloat tree2Collision = xz_length(cameraPosition - tree2Pos);
 	GLfloat tree3Collision = xz_length(cameraPosition - tree3Pos);
-	GLfloat snowman1ToTree = xz_length(snowman1Pos - tree1Pos);
 	// Collision with snowmen
 	if (snowman1Collision < 2.0 || snowman2Collision < 2.0 || snowman3Collision < 2.0) {
 		cameraPosition = oldCameraPosition;

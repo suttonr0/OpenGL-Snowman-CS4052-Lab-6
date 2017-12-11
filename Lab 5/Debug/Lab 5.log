@@ -3,7 +3,7 @@ c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(200): war
   c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(387): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(489): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(495): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(496): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(497): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(498): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 c:\.trinity 4\cs4052 computer graphics\lab 6\lab 6 code\lab 5\main.cpp(501): warning C4305: 'argument': truncation from 'double' to 'float'
