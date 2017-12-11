@@ -5,6 +5,7 @@ in vec3 position_eye, normal_eye;
 uniform mat4 view;
 uniform sampler2D texture_for_shader;
 uniform int no_specular;
+uniform float fire_lighting;
 
 // fixed point light properties
 
@@ -75,6 +76,7 @@ void main () {
 	
 	// final colour    
 	vec4 frag_colour = vec4 (Is + Id + Ia, 1.0);  // linear combination of ambient, diffuse and specular
+	vec4 pre_fire_colour = frag_colour * texture_vec;
 	
-	fragment_colour	= frag_colour * texture_vec;
+	fragment_colour	= fire_lighting * pre_fire_colour;
 }

@@ -34,6 +34,9 @@
 #define GROUND_MESH "Ground2.dae"
 #define SNOWMAN_ARM_MESH "SnowmanArm.dae"
 #define SNOWBALL_MESH "Snowball.dae"
+#define FIRELOGS_MESH "firelogs.dae"
+#define FIREFLAME_MESH "fireflame.dae"
+
 /*----------------------------------------------------------------------------
 				   TEXTURES TO LOAD
 ----------------------------------------------------------------------------*/
@@ -42,6 +45,8 @@
 #define SNOWMAN_TEXTURE "SnowmanTexture2.png"
 #define TREE_TEXTURE "pineTree.png"
 #define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
+#define FIREFLAME_TEXTURE "fireflame.png"
+
 /*----------------------------------------------------------------------------
   ----------------------------------------------------------------------------*/
 
@@ -52,6 +57,8 @@ int tree_vertex_count = 0;
 int snowman_vertex_count = 0;
 int snowball_vertex_count = 0;
 int snowman_arm_vertex_count = 0;
+int firelogs_vertex_count = 0;
+int fireflame_vertex_count = 0;
 
 
 // Macro for indexing vertex buffer
@@ -67,11 +74,14 @@ GLuint TREE_ID = 2;
 GLuint SNOWMAN_ID = 3;
 GLuint SNOWMAN_ARM_ID = 4;
 GLuint SNOWBALL_ID = 5;
+GLuint FIRELOGS_ID = 6;
+GLuint FIREFLAME_ID = 7;
 
 GLuint GROUND_TEX_ID = 1;
 GLuint TREE_TEX_ID = 2;
 GLuint SNOWMAN_TEX_ID = 3;
 GLuint SNOWMAN_ARM_TEX_ID = 4;
+GLuint FIREFLAME_TEX_ID = 5;
 
 int width = 1200;
 int height = 800;
@@ -80,6 +90,9 @@ GLuint loc1, loc2, loc3;
 GLfloat rotate_y = 0.0f;
 GLfloat translate_y = 0.0f;
 GLfloat camerarotationy = 0.0f;
+
+GLfloat fire_value = 0.9f;
+bool fire_inc = true;
 
 // Snowman AI 
 bool armSwitch = true;
@@ -154,6 +167,14 @@ bool load_mesh (const char* file_name) {
 	else if (file_name == SNOWBALL_MESH) {
 		printf("Found snowball");
 		snowball_vertex_count = mesh->mNumVertices;
+	}
+	else if (file_name == FIRELOGS_MESH) {
+		printf("Found logs");
+		firelogs_vertex_count = mesh->mNumVertices;
+	}
+	else if (file_name == FIREFLAME_MESH) {
+		printf("Found logs");
+		fireflame_vertex_count = mesh->mNumVertices;
 	}
 	else
 		g_point_count = mesh->mNumVertices;
@@ -379,6 +400,9 @@ void display(){
 	int proj_mat_location = glGetUniformLocation (shaderProgramID, "proj");
 	int texture_location = glGetUniformLocation(shaderProgramID, "tex");
 	int no_specular = glGetUniformLocation(shaderProgramID, "no_specular");
+	int fire_lighting = glGetUniformLocation(shaderProgramID, "fire_lighting");
+
+	glUniform1f(fire_lighting, fire_value);
 
 	// Root of the Hierarchy
 	cameraDirection.v[0] = sin(camerarotationy);
@@ -574,6 +598,32 @@ void display(){
 	glBindVertexArray(SNOWMAN_ARM_ID);
 	glDrawArrays(GL_TRIANGLES, 0, snowman_arm_vertex_count);
 
+	// Logs
+	mat4 logs_local = identity_mat4();
+	logs_local = rotate_x_deg(logs_local, -90);
+	logs_local = scale(logs_local, vec3(0.7, 0.7, 0.7));
+	logs_local = translate(logs_local, vec3(0, 0.5, 0));
+	mat4 logs_global = logs_local;
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, logs_global.m);
+	glBindVertexArray(FIRELOGS_ID);
+	glDrawArrays(GL_TRIANGLES, 0, firelogs_vertex_count);
+
+	mat4 flame_local = identity_mat4();
+	flame_local = rotate_x_deg(flame_local, -45);
+	flame_local = rotate_z_deg(flame_local, 35);
+	flame_local = scale(flame_local, vec3(0.7, 0.7, 0.7));
+	flame_local = translate(flame_local, vec3(0, 1.5, 0));
+	mat4 flame_global = flame_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, flame_global.m);
+
+	glBindTexture(GL_TEXTURE_2D, FIREFLAME_TEX_ID);
+	glUniform1i(texture_location, 0);
+
+	glBindVertexArray(FIREFLAME_ID);
+	glDrawArrays(GL_TRIANGLES, 0, fireflame_vertex_count);
+
+
     glutSwapBuffers();
 }
 
@@ -633,6 +683,20 @@ void updateScene() {
 			marchOrder = true;
 		}
 	}	
+
+	// Day-night cycle?
+	if (fire_inc) {
+		fire_value += 0.0002;
+	}
+	else{
+		fire_value -= 0.0002;
+	}
+	if (fire_value > 0.99) {
+		fire_inc = false;
+	}
+	if (fire_value < 0.05) {
+		fire_inc = true;
+	}
 
 	// Snowball Collision
 	GLfloat SbSnowman1Coll = xz_length(snowballPos - snowman1Pos);
@@ -715,11 +779,16 @@ void init()
 	generateObjectBufferMesh(SNOWMAN_ID, SNOWMAN_MESH, snowman_vertex_count);
 	generateObjectBufferMesh(SNOWMAN_ARM_ID, SNOWMAN_ARM_MESH, snowman_arm_vertex_count);
 	generateObjectBufferMesh(SNOWBALL_ID, SNOWBALL_MESH, snowball_vertex_count);
+	generateObjectBufferMesh(FIRELOGS_ID, FIRELOGS_MESH, firelogs_vertex_count);
+	generateObjectBufferMesh(FIREFLAME_ID, FIREFLAME_MESH, fireflame_vertex_count);
+
 
 	loadTextures(GROUND_TEX_ID, GROUND_TEXTURE);
 	loadTextures(TREE_TEX_ID, TREE_TEXTURE);
 	loadTextures(SNOWMAN_TEX_ID, SNOWMAN_TEXTURE);
 	loadTextures(SNOWMAN_ARM_TEX_ID, SNOWMAN_ARM_TEXTURE);
+	loadTextures(FIREFLAME_TEX_ID, FIREFLAME_TEXTURE);
+
 }
 
 // Placeholder code for the keypress
