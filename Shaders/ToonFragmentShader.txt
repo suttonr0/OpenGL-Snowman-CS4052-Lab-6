@@ -12,7 +12,7 @@ uniform int full_ambient;
 
 vec3 light_position_world = vec3 (0.0, 1.0, 0.0); // was 0, 20, 2
 vec3 Ls = vec3 (1.0, 1.0, 1.0); // white specular colour
-vec3 Ld = vec3 (0.5, 0.5, 0.5); // dull white diffuse light colour
+vec3 Ld = vec3 (0.7, 0.7, 0.7); // dull white diffuse light colour
 vec3 La = vec3 (1.0, 1.0, 1.0); // white ambient colour
 
 // surface reflectance

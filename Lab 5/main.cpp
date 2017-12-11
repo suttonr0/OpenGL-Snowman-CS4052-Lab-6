@@ -423,7 +423,7 @@ void display(){
 
 	// GROUND 1 ------------------------
 	mat4 ground_matrix = identity_mat4 ();
-	ground_matrix = scale(ground_matrix, vec3(15.0, 15.0, 15.0));
+	ground_matrix = scale(ground_matrix, vec3(30.0, 30.0, 15.0));
 	ground_matrix = rotate_x_deg(ground_matrix, -90);
 	ground_matrix = translate(ground_matrix, vec3(0.0, 1.5, 0.0));
 	// update uniforms & draw
@@ -435,6 +435,8 @@ void display(){
 
 	glBindVertexArray(GROUND_ID);
 	glDrawArrays (GL_TRIANGLES, 0, ground_count);
+
+
 
 	// ----------------------------------------
 	// TREES
@@ -641,7 +643,7 @@ void display(){
 	mat4 skybox_local = identity_mat4();
 	skybox_local = scale(skybox_local, vec3(100.0, 100.0, 100.0));
 	skybox_local = rotate_x_deg(skybox_local, 90);
-	skybox_local = translate(skybox_local, vec3(cameraPosition.v[0], 0, cameraPosition.v[2]));
+	skybox_local = translate(skybox_local, vec3(cameraPosition.v[0], 20, cameraPosition.v[2]));
 
 	mat4 skybox_global = skybox_local;
 	// update uniforms & draw
