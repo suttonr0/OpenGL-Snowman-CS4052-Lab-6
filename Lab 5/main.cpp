@@ -36,6 +36,7 @@
 #define SNOWBALL_MESH "Snowball.dae"
 #define FIRELOGS_MESH "firelogs.dae"
 #define FIREFLAME_MESH "fireflame2.dae"
+#define SKYBOX_MESH "skybox.dae"
 
 /*----------------------------------------------------------------------------
 				   TEXTURES TO LOAD
@@ -46,6 +47,7 @@
 #define TREE_TEXTURE "pineTree.png"
 #define SNOWMAN_ARM_TEXTURE "ArmTexture2.png"
 #define FIREFLAME_TEXTURE "fireflame.png"
+#define SKYBOX_TEXTURE "Skybox.png"
 
 /*----------------------------------------------------------------------------
   ----------------------------------------------------------------------------*/
@@ -59,7 +61,7 @@ int snowball_vertex_count = 0;
 int snowman_arm_vertex_count = 0;
 int firelogs_vertex_count = 0;
 int fireflame_vertex_count = 0;
-
+int skybox_vertex_count = 0;
 
 // Macro for indexing vertex buffer
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -76,12 +78,14 @@ GLuint SNOWMAN_ARM_ID = 4;
 GLuint SNOWBALL_ID = 5;
 GLuint FIRELOGS_ID = 6;
 GLuint FIREFLAME_ID = 7;
+GLuint SKYBOX_ID = 8;
 
 GLuint GROUND_TEX_ID = 1;
 GLuint TREE_TEX_ID = 2;
 GLuint SNOWMAN_TEX_ID = 3;
 GLuint SNOWMAN_ARM_TEX_ID = 4;
 GLuint FIREFLAME_TEX_ID = 5;
+GLuint SKYBOX_TEX_ID = 6;
 
 int width = 1200;
 int height = 800;
@@ -173,8 +177,12 @@ bool load_mesh (const char* file_name) {
 		firelogs_vertex_count = mesh->mNumVertices;
 	}
 	else if (file_name == FIREFLAME_MESH) {
-		printf("Found logs");
+		printf("Found fire");
 		fireflame_vertex_count = mesh->mNumVertices;
+	}
+	else if (file_name == SKYBOX_MESH) {
+		printf("Found skybox");
+		skybox_vertex_count = mesh->mNumVertices;
 	}
 	else
 		g_point_count = mesh->mNumVertices;
@@ -407,7 +415,7 @@ void display(){
 	cameraDirection.v[0] = sin(camerarotationy);
 	cameraDirection.v[2] = cos(camerarotationy);
 	mat4 view = look_at(cameraPosition, cameraPosition + cameraDirection, cameraUpVector);
-	mat4 persp_proj = perspective(45.0, (float)width/(float)height, 0.1, 100.0);
+	mat4 persp_proj = perspective(45.0, (float)width/(float)height, 0.1, 200.0);
 	
 
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
@@ -608,6 +616,7 @@ void display(){
 	glBindVertexArray(FIRELOGS_ID);
 	glDrawArrays(GL_TRIANGLES, 0, firelogs_vertex_count);
 
+
 	// Flame
 	mat4 flame_local = identity_mat4();
 	flame_local = rotate_x_deg(flame_local, -45);
@@ -627,6 +636,22 @@ void display(){
 
 	glBindVertexArray(FIREFLAME_ID);
 	glDrawArrays(GL_TRIANGLES, 0, fireflame_vertex_count);
+
+
+	mat4 skybox_local = identity_mat4();
+	skybox_local = scale(skybox_local, vec3(100.0, 100.0, 100.0));
+	skybox_local = rotate_x_deg(skybox_local, 90);
+	skybox_local = translate(skybox_local, vec3(cameraPosition.v[0], 0, cameraPosition.v[2]));
+
+	mat4 skybox_global = skybox_local;
+	// update uniforms & draw
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, skybox_global.m);
+
+	glBindTexture(GL_TEXTURE_2D, SKYBOX_TEX_ID);
+	glUniform1i(texture_location, 0);
+
+	glBindVertexArray(SKYBOX_ID);
+	glDrawArrays(GL_TRIANGLES, 0, skybox_vertex_count);
 
 	glUniform1i(no_specular, 0);  // No specular component for fire
 	glUniform1i(no_diffuse, 0);  // No diffuse for fire
@@ -786,14 +811,14 @@ void init()
 	generateObjectBufferMesh(SNOWBALL_ID, SNOWBALL_MESH, snowball_vertex_count);
 	generateObjectBufferMesh(FIRELOGS_ID, FIRELOGS_MESH, firelogs_vertex_count);
 	generateObjectBufferMesh(FIREFLAME_ID, FIREFLAME_MESH, fireflame_vertex_count);
-
+	generateObjectBufferMesh(SKYBOX_ID, SKYBOX_MESH, skybox_vertex_count);
 
 	loadTextures(GROUND_TEX_ID, GROUND_TEXTURE);
 	loadTextures(TREE_TEX_ID, TREE_TEXTURE);
 	loadTextures(SNOWMAN_TEX_ID, SNOWMAN_TEXTURE);
 	loadTextures(SNOWMAN_ARM_TEX_ID, SNOWMAN_ARM_TEXTURE);
 	loadTextures(FIREFLAME_TEX_ID, FIREFLAME_TEXTURE);
-
+	loadTextures(SKYBOX_TEX_ID, SKYBOX_TEXTURE);
 }
 
 // Placeholder code for the keypress
